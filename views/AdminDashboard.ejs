@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intune Automations Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    .top-bar {
+        background-color: #1c2833;
+        padding: 15px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .logo {
+        font-size: 24px;
+        font-weight: bold;
+        color: #3498db;
+        display: flex;
+        align-items: center;
+    }
+
+    .logo i {
+        margin-right: 10px;
+        font-size: 28px;
+    }
+
+    .main-content {
+        flex-grow: 1;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .header {
+        font-size: 36px;
+        font-weight: bold;
+        text-align: center;
+        color: #1c2833;
+        background-color: #3498db;
+        padding: 25px 40px;
+        border-radius: 20px;
+        margin-bottom: 40px;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1), 0 0 60px rgba(52, 152, 219, 0.3) inset;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(0deg, transparent, transparent, #fff, #fff);
+        transform-origin: bottom right;
+        animation: glare 5s linear infinite;
+    }
+
+    @keyframes glare {
+        0% { transform: rotate(0deg); opacity: 0; }
+        20% { transform: rotate(0deg); opacity: 0.3; }
+        80% { transform: rotate(360deg) translate(-50%, -50%); opacity: 0.3; }
+        100% { transform: rotate(360deg) translate(-50%, -50%); opacity: 0; }
+    }
+
+    .content-container {
+        display: flex;
+        width: 100%;
+        gap: 40px;
+        max-width: 1200px;
+        margin-top: -10px;
+    }
+
+    .left-content, .right-content {
+        flex: 1;
+        background-color: #34495e;
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 0 30px rgba(52, 152, 219, 0.1) inset;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .content-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(45deg, rgba(52, 152, 219, 0.1) 0%, rgba(44, 62, 80, 0.1) 100%);
+        pointer-events: none;
+    }
+
+    .welcome-message {
+        font-size: 15px;
+        line-height: 1.6;
+        color: #ecf0f1;
+        margin-bottom: -0.5px;
+    }
+
+    .feature-list {
+        padding-left: 20px;
+        color: #bdc3c7;
+        list-style-type: none;
+    }
+
+    .feature-list li {
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+    }
+
+    .feature-list i {
+        margin-right: 15px;
+        font-size: 20px;
+        color: #3498db;
+        width: 25px;
+        text-align: center;
+    }
+
+    .caution-message {
+        font-style: italic;
+        color: #e74c3c;
+        margin-top: 20px;
+        display: flex;
+        align-items: center;
+    }
+
+    .caution-message i {
+        margin-right: 10px;
+        font-size: 20px;
+    }
+
+    .device-image {
+        display: block;
+        margin: 0 auto 30px;
+        width: 150px;
+        height: auto;
+        border-radius: 15px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        transform: perspective(1000px) rotateY(-15deg);
+        transition: transform 0.5s;
+    }
+
+    .device-image:hover {
+        transform: perspective(1000px) rotateY(0deg);
+    }
+
+    .device-input {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 20px;
+        border: 2px solid #3498db;
+        border-radius: 10px;
+        box-sizing: border-box;
+        font-size: 16px;
+        transition: border-color 0.3s, box-shadow 0.3s;
+        background-color: #2c3e50;
+        color: #ecf0f1;
+    }
+
+    .device-input:focus {
+        border-color: #2980b9;
+        outline: none;
+        box-shadow: 0 0 15px rgba(52, 152, 219, 0.5);
+    }
+
+    .right-content h2 {
+        color: #ecf0f1;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    
+    .user-input {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 20px;
+        border: 2px solid #3498db;
+        border-radius: 10px;
+        box-sizing: border-box;
+        font-size: 16px;
+        transition: border-color 0.3s, box-shadow 0.3s;
+        background-color: #2c3e50;
+        color: #ecf0f1;
+    }
+    
+    .user-input:focus {
+        border-color: #2980b9;
+        outline: none;
+        box-shadow: 0 0 15px rgba(52, 152, 219, 0.5);
+    }
+
+    .validate-btn {
+        width: auto;
+        background-color: #3498db;
+        color: #fff;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 18px;
+        font-weight: bold;
+        transition: all 0.3s;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        display: block;
+        margin: 0 auto;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .validate-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.5s;
+    }
+
+    .validate-btn:hover {
+        background-color: #2980b9;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .validate-btn:hover::before {
+        left: 100%;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.7);
+        backdrop-filter: blur(5px);
+    }
+
+    .modal-content {
+        background-color: #34495e;
+        margin: 15% auto;
+        padding: 30px;
+        border: 2px solid #3498db;
+        width: 90%;
+        max-width: 400px;
+        border-radius: 20px;
+        text-align: center;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3), 0 0 50px rgba(52, 152, 219, 0.1) inset;
+        animation: modalFadeIn 0.5s;
+    }
+
+    @keyframes modalFadeIn {
+        from { opacity: 0; transform: translateY(-50px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .modal-header img {
+        width: 50px;
+        height: 50px;
+        margin-right: 10px;
+        animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+    }
+
+    @keyframes shake {
+        10%, 90% { transform: translate3d(-1px, 0, 0); }
+        20%, 80% { transform: translate3d(2px, 0, 0); }
+        30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+        40%, 60% { transform: translate3d(4px, 0, 0); }
+    }
+
+    .modal-header h2 {
+        margin: 0;
+        font-size: 28px;
+        color: #e74c3c;
+    }
+
+    .modal-body p {
+        font-size: 18px;
+        color: #ecf0f1;
+        line-height: 1.6;
+    }
+
+    .ok-btn {
+        background-color: #3498db;
+        color: white;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 18px;
+        font-weight: bold;
+        margin-top: 20px;
+        transition: all 0.3s;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .ok-btn:hover {
+        background-color: #2980b9;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .loading {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background-color: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(5px);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        color: #fff;
+    }
+
+    .spinner {
+        border: 8px solid #f3f3f3;
+        border-top: 8px solid #3498db;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+        margin-top: 20px;
+        font-size: 18px;
+    }
+
+    .footer {
+        background-color: #1c2833;
+        padding: 15px 30px;
+        text-align: center;
+        color: #bdc3c7;
+        font-size: 14px;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
+    }
+</style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="logo">
+            <i class="fas fa-laptop"></i>
+            <span>Intune Automations</span>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="header">Intune Admin Dashboard</div>
+        <div class="content-container">
+            <div class="left-content">
+                <div class="content-overlay"></div>
+                <p class="welcome-message">Welcome to the Intune Automations Dashboard! Experience seamless control over your devices with our intuitive interface.</p>
+                <p>Effortlessly manage:</p>
+                <ul class="feature-list">
+                    <li><i class="fas fa-mobile-alt"></i> Handle iPhone loss</li>
+                </ul>
+                <p>Simplify your IT workflows and enhance productivity.</p>
+                <p class="caution-message"><i class="fas fa-exclamation-triangle"></i> All operations require device validation from Intune.</p>
+            </div>
+            <div class="right-content">
+                <div class="content-overlay"></div>
+                <img src="https://icon-library.com/images/device-icon/device-icon-23.jpg" alt="Device Icon" class="device-image">
+                <h2>Enter User Details</h2>
+                <form action="/validateAdminUser" method="POST">
+                    <input type="email" class="user-input" name="userEmail" placeholder="Enter User Email Address" required>
+                    <button type="submit" class="validate-btn">Validate User</button>
+                </form>
+            </div>
+
+            <div id="deviceList" style="display: none;">
+                <h2>Assigned Devices</h2>
+                <ul id="deviceItems"></ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        &copy; 2024 Intune Automations. All rights reserved.
+    </div>
+
+    <!-- Loading Screen -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p class="loading-text">Validating the userEmail....</p>
+    </div>
+
+    <!-- Modal -->
+    <div id="responseModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <img id="modalIcon" src="https://th.bing.com/th/id/OIP.bI9pF0xV5lHc_AgvXDVv0QAAAA?rs=1&pid=ImgDetMain" alt="Response Icon">
+                <h2 id="modalTitle"></h2>
+            </div>
+            <div class="modal-body">
+                <p id="modalMessage"></p>
+                <button class="ok-btn">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="errorModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <img src="https://img.icons8.com/flat-round/64/000000/cancel--v1.png" alt="Invalid">
+                <h2>Error</h2>
+            </div>
+            <div class="modal-body">
+                <p id="errorMessage"></p>
+                <button class="ok-btn">OK</button>
+            </div>
+        </div>
+    </div>
+    
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        // Function to show the loading screen
+        function showLoading() {
+            document.getElementById('loading').style.display = 'flex';
+        }
+
+        // Function to hide the loading screen
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        // Add event listener to the form submit event
+        document.querySelector('form').addEventListener('submit', function() {
+            showLoading();
+        });
+
+        // Hide the loading screen once the page is fully loaded
+        window.addEventListener('load', function() {
+            hideLoading();
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        const validateBtn = document.querySelector('.validate-btn');
+        const loadingScreen = document.getElementById('loading');
+    
+        function showLoading() {
+            loadingScreen.style.display = 'flex';
+        }
+    
+        function hideLoading() {
+            loadingScreen.style.display = 'none';
+        }
+    
+        function showResponseModal(message, isError = true) {
+            const modal = document.getElementById("responseModal");
+            const modalMessage = document.getElementById("modalMessage");
+            const modalTitle = document.getElementById("modalTitle");
+            const modalIcon = document.getElementById("modalIcon");
+            
+            modalMessage.textContent = message;
+            if (isError) {
+                modalTitle.textContent = "Error";
+                modalTitle.style.color = "#e74c3c";
+                modalIcon.src = "https://img.icons8.com/flat-round/64/000000/cancel--v1.png";
+                modalIcon.alt = "Error Icon";
+            } else {
+                modalTitle.textContent = "Success";
+                modalTitle.style.color = "#2ecc71";
+                modalIcon.src = "https://img.icons8.com/flat-round/64/000000/checkmark.png";
+                modalIcon.alt = "Success Icon";
+            }
+            modal.style.display = "block";
+    
+            const okButton = modal.querySelector('.ok-btn');
+            okButton.onclick = function() {
+                modal.style.display = "none";
+            };
+        }
+    
+        function createDeviceDropdown(devices) {
+            validateBtn.style.display = 'none'; // Hide the validate button
+            
+            // Check if dropdown already exists
+            if (!document.getElementById('deviceDropdown')) {
+                const dropdownContainer = document.createElement('div');
+                dropdownContainer.innerHTML = `
+                    <select id="deviceDropdown" class="device-input">
+                        <option value="">Select a device</option>
+                        ${devices.map(device => `<option value="${device}">${device}</option>`).join('')}
+                    </select>
+                    <button id="proceedBtn" class="validate-btn">Proceed</button>
+                `;
+                form.appendChild(dropdownContainer);
+    
+                document.getElementById('proceedBtn').addEventListener('click', function() {
+                    const selectedDevice = document.getElementById('deviceDropdown').value;
+                    const userEmail = document.querySelector('input[name="userEmail"]').value;
+                    
+                    if (selectedDevice) {
+                        // Redirect to AdminDeviceoperations.ejs with query parameters
+                        window.location.href = `/AdminDeviceoperations?userEmail=${encodeURIComponent(userEmail)}&deviceName=${encodeURIComponent(selectedDevice)}`;
+                    } else {
+                        showResponseModal('Please select a device', true);
+                    }
+                });
+            }
+        }
+    
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            showLoading();
+    
+            const formData = new FormData(form);
+            const userEmail = formData.get('userEmail');
+    
+            fetch('/validateAdminUser', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userEmail: userEmail })
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideLoading();
+                if (data.success) {
+                    if (data.devices && data.devices.length > 0) {
+                        showResponseModal(data.message, false);  // Show success modal
+                        createDeviceDropdown(data.devices);
+                    } else {
+                        showResponseModal('No devices found for this user.', true);
+                    }
+                } else {
+                    showResponseModal(data.message, true);  // Show error modal
+                }
+            })
+            .catch(error => {
+                hideLoading();
+                showResponseModal('An error occurred. Please try again.', true);
+                console.error('Error:', error);
+            });
+        });
+    });
+</script>
+    
+    <% if (typeof errorMessage !== 'undefined') { %>
+        <script>
+            document.addEventListener('DOMContentLoaded', (event) => {
+                var modal = document.getElementById("errorModal");
+                var okButton = document.getElementsByClassName("ok-btn")[0];
+                var message = "<%= errorMessage %>";
+    
+                document.getElementById("errorMessage").innerText = message;
+                modal.style.display = "block";
+    
+                okButton.onclick = function() {
+                    modal.style.display = "none";
+                    window.history.replaceState(null, null, window.location.pathname);
+                }
+            });
+        </script>
+    <% } %>
+</body>
+</html>

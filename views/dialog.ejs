@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dialog</title>
+    <script>
+        function handleOk() {
+            window.location.href = '/deviceoperations';
+        }
+
+        function handleCancel() {
+            window.history.back();
+        }
+    </script>
+</head>
+<body>
+    <div>
+        <p><%= message %></p>
+        <button onclick="handleOk()">OK</button>
+        <button onclick="handleCancel()">Cancel</button>
+    </div>
+</body>
+</html>

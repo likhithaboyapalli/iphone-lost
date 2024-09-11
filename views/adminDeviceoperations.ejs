@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Device Operations</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: #fff;
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar, .right-sidebar {
+            width: 250px;
+            background-color: #1c2833;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-align: center;
+            color: #3498db;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            flex-grow: 1;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 15px;
+        }
+
+        .sidebar-menu a {
+            color: #bdc3c7;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 8px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            color: #fff;
+            background-color: #3498db;
+        }
+
+        .sidebar-menu i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .header {
+            font-size: 32px;
+            font-weight: bold;
+            text-align: center;
+            color: #1c2833;
+            background-color: #3498db;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .input-container {
+            background-color: #34495e;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            box-sizing: border-box;
+            max-width: 600px;
+        }
+
+        .input-container h2 {
+            color: #fff;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .input-field {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #3498db;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #fff;
+            background-color: #2c3e50;
+        }
+
+        .input-field::placeholder {
+            color: #bdc3c7;
+        }
+
+        .input-field:disabled {
+            background-color: #2c3e50;
+            color: #95a5a6;
+        }
+
+        .submit-btn, .logout-btn {
+            width: auto;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .submit-btn:hover, .logout-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .device-info {
+            margin-top: 30px;
+        }
+
+        .device-info p {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            color: #bdc3c7;
+        }
+
+        .device-info i {
+            margin-right: 10px;
+            font-size: 18px;
+            color: #fff;
+            width: 24px;
+            text-align: center;
+        }
+
+        .device-info .label {
+            font-weight: bold;
+            color: #fff;
+            margin-right: 10px;
+        }
+
+        .user-info {
+            background-color: #34495e;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .user-email {
+            color: #fff;
+            font-size: 14px;
+            word-break: break-all;
+        }
+
+        .logout-btn {
+            margin-top: auto;
+            background-color: #e74c3c;
+        }
+
+        .logout-btn:hover {
+            background-color: #c0392b;
+        }
+        .dialog-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .dialog-box {
+            background: #34495e;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 300px;
+            width: 100%;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .dialog-box h3 {
+            margin-top: 0;
+        }
+        
+        .dialog-box button {
+            padding: 10px 20px;
+            margin-top: 15px;
+            cursor: pointer;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+        }
+        .success { border-top: 5px solid #2ecc71; }
+        .error { border-top: 5px solid #e74c3c; }
+
+        .success-icon {
+            color: #4caf50;
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        
+        .error-icon {
+            color: #f44336;
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        
+        .dialog-btn {
+            padding: 10px 20px;
+            margin-top: 15px;
+            cursor: pointer;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        #loadingScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 2s linear infinite;
+            margin-top: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <%
+    const dialogData = {
+      success: false,
+      message: ''
+    };
+  %>
+  
+  <% if (typeof successMessage !== 'undefined') { %>
+    <%
+      dialogData.success = true;
+      dialogData.message = successMessage;
+    %>
+  <% } else if (typeof errorMessage !== 'undefined') { %>
+    <%
+      dialogData.success = false;
+      dialogData.message = errorMessage;
+    %>
+  <% } %>
+  
+  <!--script src="/js/deviceFunctions.js"></script-->
+  
+    <div id="loadingScreen" style="display: none;">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Loading Dialog -->
+    <div class="dialog-overlay" id="loadingDialog" style="display: none;">
+        <div class="dialog-box">
+            <h3>Loading...</h3>
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    <div class="dialog-overlay" id="dialogOverlay" style="display: <%= dialogData.message ? 'flex' : 'none' %>;">
+        <div class="dialog-box">
+            <% if (dialogData.success) { %>
+                <i class="fas fa-check-circle success-icon"></i>
+                <h3 class="success">Success!</h3>
+            <% } else { %>
+                <i class="fas fa-exclamation-circle error-icon"></i>
+                <h3 class="error">Error</h3>
+            <% } %>
+            <p><%= dialogData.message %></p>
+            <button id="closeDialogBtn" class="dialog-btn">OK</button>
+        </div>
+    </div>
+
+    <!-- Reset Device Name Dialog -->
+    <div class="dialog-overlay" id="resetDialog" style="display: none;">
+        <div class="dialog-box">
+            <h3>Reset Device Name</h3>
+            <p class="dialog-text">Are you sure do you want to work on another device?</p>
+            <div style="display: flex; justify-content: center; gap: 10px;"> <!-- Added a container div with flexbox styles -->
+                <button onclick="confirmResetDeviceName()" class="dialog-btn">Yes</button>
+                <button onclick="closeDialog('resetDialog')" class="dialog-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <div class="sidebar-logo">Activities</div>
+        <ul class="sidebar-menu">
+
+            <li><a href="#" onclick="showInput('iphoneLost')"><i class="fas fa-mobile-alt"></i>iPhone Lost</a></li>
+
+        </ul>
+        
+    </div>
+
+    <div class="main-content">
+        <div class="header">Admin Device Operations</div>
+        <div id="inputContainer"></div>
+
+        <div id="groupTagsContainer" style="display: none;">
+            <form action="/assignGroupTag" method="POST" class="input-container">
+                <h2>Assign Group Tag</h2>
+                <input type="hidden" id="groupTagDeviceNameHidden" name="deviceName" value="">
+                <select id="groupTagSelect" name="selectedGroupTag" class="input-field">
+                    
+                </select>
+                <button type="submit" class="submit-btn">Assign Group Tag</button>
+            </form>
+        </div>
+
+    </div>
+
+    <!--script>
+        async function updateDeviceDetails() {
+            
+            const deviceName = '<%= deviceName %>';
+            const serialNumber = await fetchDevicedetails(deviceName);
+            console.log(serialNumber)
+            document.getElementById('deviceSerialDisplay').textContent = serialNumber;
+
+        }
+        
+        window.addEventListener('load', updateDeviceDetails);
+    </script-->
+
+<script>
+    async function updateDeviceDetails() {
+        try {
+            const deviceName = '<%= deviceName %>'; // Fetch deviceName from EJS
+            const response = await fetch(`/device-details?deviceName=${deviceName}`);
+    
+            if (response.ok) {
+                const data = await response.json();
+                
+                // Update right sidebar
+                document.getElementById('deviceNameDisplay').textContent = data.deviceName || deviceName;
+                document.getElementById('deviceSerialDisplay').textContent = data.serialNumber || 'N/A';
+                document.getElementById('operatingSystemDisplay').textContent = data.operatingSystem || 'N/A';
+                document.getElementById('complianceDisplay').textContent = data.complianceState || 'N/A';
+                //document.getElementById('primaryUserDisplay').textContent = data.primaryUser || 'N/A';
+                document.getElementById('lastCheckInDisplay').textContent = data.lastCheckIn || 'N/A';
+    
+                // Update input containers
+                const deviceNameInputs = document.querySelectorAll('input[name="deviceName"], input[name="deviceNameDisplay"]');
+                deviceNameInputs.forEach(input => {
+                    input.value = data.deviceName || deviceName;
+                });
+    
+                const serialNumberInputs = document.querySelectorAll('input[name="serialNumber"]');
+                serialNumberInputs.forEach(input => {
+                    input.value = data.serialNumber || '';
+                });
+    
+                // Update currentSerialNumber for other functions
+                currentSerialNumber = data.serialNumber || '';
+    
+                console.log('Device details updated successfully');
+            } else {
+                console.error('Failed to fetch device details');
+                // Set default values or error messages
+                ['deviceSerialDisplay', 'operatingSystemDisplay', 'complianceDisplay', 'lastCheckInDisplay'].forEach(id => {
+                    document.getElementById(id).textContent = 'N/A';
+                });
+            }
+        } catch (error) {
+            console.error('Error fetching device details:', error);
+            // Set error message
+            ['deviceSerialDisplay', 'operatingSystemDisplay', 'complianceDisplay', 'lastCheckInDisplay'].forEach(id => {
+                document.getElementById(id).textContent = 'Error';
+            });
+        }
+    }
+    
+    window.addEventListener('load', updateDeviceDetails);
+</script>
+    
+
+<div class="right-sidebar">
+    <div class="user-info">
+        <span class="user-email"><%= deviceName %></span>
+    </div>
+    <div class="sidebar-logo">Device Info</div>
+    <div class="device-info">
+        <p><i class="fas fa-laptop"></i><span class="label">Device Name:</span><span id="deviceNameDisplay"><%= deviceName %></span></p>
+        <p><i class="fas fa-check-circle"></i><span class="label">Serial Number:</span><span id="deviceSerialDisplay"></span></p>
+        <p><i class="fab fa-windows"></i><span class="label">OS:</span><span id="operatingSystemDisplay"><%= operatingSystem %></span></p>
+        <p><i class="fas fa-shield-alt"></i><span class="label">Compliance:</span><span id="complianceDisplay"><%= compliance %></span></p>
+        <!--p><i class="fas fa-user"></i><span class="label">Primary User:</span><span id="primaryUserDisplay"><%= primaryUser %></span></p-->
+        <p><i class="fas fa-clock"></i><span class="label">Last Check-In:</span><span id="lastCheckInDisplay"><%= lastCheckIn %></span></p>
+    </div>
+    <button class="reset-btn" onclick="resetDeviceName()"><i class="fas fa-sync-alt"></i> Reset Device Name</button-->
+    <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+</div>
+
+
+
+<script>
+    const closeDialogBtn = document.getElementById('closeDialogBtn');
+    closeDialogBtn.addEventListener('click', () => {
+        const dialogOverlay = document.getElementById('dialogOverlay');
+        dialogOverlay.style.display = 'none';
+    });
+</script>
+
+<script>
+        //const loadingScreen = document.getElementById('loadingDialog');
+
+        function showLoadingScreen() {
+            const loadingScreen = document.getElementById('loadingDialog');
+            loadingScreen.style.display = 'flex';
+        }
+        
+        function hideLoadingScreen() {
+            const loadingScreen = document.getElementById('loadingScreen');
+            loadingScreen.style.display = 'none';
+        }
+
+        // Function to show the loading dialog
+        function showLoadingDialog() {
+            const loadingDialog = document.getElementById('loadingDialog');
+            loadingDialog.style.display = 'flex';
+        }
+
+        function showGroupTags() {
+            const inputContainer = document.getElementById('inputContainer');
+            const deviceName = document.getElementById('deviceNameDisplay').textContent;
+            showLoadingDialog();
+
+            fetch('/fetchGroupTags', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ deviceName: deviceName }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideLoadingDialog();
+                if (data.success && data.groupTags) {
+                    displayGroupTags(data.groupTags, deviceName);
+                } else {
+                    showDialog(false, data.message || 'Failed to fetch group tags');
+                }
+            })
+            .catch(error => {
+                hideLoadingDialog();
+                console.error('Error:', error);
+                showDialog(false, 'An error occurred while fetching group tags.');
+            });
+
+            highlightActiveMenuItem('fetchGroupTags');
+        }
+
+        // Function to hide the loading dialog
+        function hideLoadingDialog() {
+            const loadingDialog = document.getElementById('loadingDialog');
+            loadingDialog.style.display = 'none';
+        }
+
+        // Function to show the dialog box
+        function showDialog(success, message) {
+            const dialogOverlay = document.getElementById('dialogOverlay');
+            const closeDialogBtn = document.getElementById('closeDialogBtn');
+
+            const dialogBox = dialogOverlay.querySelector('.dialog-box');
+            const dialogTitle = dialogBox.querySelector('h3');
+            const dialogMessage = dialogBox.querySelector('p');
+
+            dialogTitle.textContent = success ? 'Success!' : 'Error';
+            dialogTitle.classList.remove('success', 'error');
+            dialogTitle.classList.add(success ? 'success' : 'error');
+            dialogMessage.textContent = message;
+
+            dialogOverlay.style.display = 'flex';
+
+            closeDialogBtn.addEventListener('click', () => {
+                dialogOverlay.style.display = 'none';
+            });
+        }
+
+        function confirmResetDeviceName() {
+            if (confirm("Are you sure you want to reset the device name? This action will redirect you to the dashboard page.")) {
+                // Get the device name from the DOM
+                const deviceNameDisplay = document.getElementById('deviceNameDisplay');
+                const deviceName = deviceNameDisplay ? deviceNameDisplay.textContent : '';
+            
+        
+                // Redirect to dashboard page with device name as query parameter
+                window.location.href = "/AdminDashboard?deviceName=" + encodeURIComponent(deviceName);
+            }
+        }
+        
+        // Function to close the dialog
+        function closeDialog(dialogId) {
+            document.getElementById(dialogId).style.display = 'none';
+        }
+
+        let currentSerialNumber = '';
+        let currentPhoneNumber = '';
+
+        // Set up a MutationObserver to watch for changes in the deviceSerialDisplay element
+        const serialObserver = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'childList' || mutation.type === 'characterData') {
+                    currentSerialNumber = document.getElementById('deviceSerialDisplay').textContent.trim();
+                    console.log('Serial number updated:', currentSerialNumber);
+                    updateSerialNumberInForm();
+                }
+            });
+        });
+
+        // Set up a MutationObserver to watch for changes in the devicePhoneDisplay element
+        const phoneObserver = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'childList' || mutation.type === 'characterData') {
+                    currentPhoneNumber = document.getElementById('devicePhoneDisplay').textContent.trim();
+                    console.log('Phone number updated:', currentPhoneNumber);
+                    updatePhoneNumberInForm();
+                }
+            });
+        });
+
+        // Function to start observing elements
+        function startObserving() {
+            const serialElement = document.getElementById('deviceSerialDisplay');
+            if (serialElement) {
+                serialObserver.observe(serialElement, { childList: true, characterData: true, subtree: true });
+                console.log('Started observing serial number');
+            } else {
+                console.warn('Serial number display element not found');
+            }
+
+            const phoneElement = document.getElementById('devicePhoneDisplay');
+            if (phoneElement) {
+                phoneObserver.observe(phoneElement, { childList: true, characterData: true, subtree: true });
+                console.log('Started observing phone number');
+            } else {
+                console.warn('Phone number display element not found');
+            }
+        }
+        
+        function updateSerialNumberInForm() {
+            const serialInput = document.getElementById('serialNumber');
+            if (serialInput) {
+                serialInput.value = currentSerialNumber;
+                console.log('Updated serial number in form:', serialInput.value);
+            }
+        }
+
+        function updatePhoneNumberInForm() {
+            const phoneInput = document.getElementById('phoneNumber');
+            if (phoneInput) {
+                if (currentPhoneNumber && currentPhoneNumber !== 'N/A' && currentPhoneNumber !== '0000000000') {
+                    phoneInput.value = currentPhoneNumber;
+                } else {
+                    phoneInput.value = 'N/A';
+                }
+                console.log('Updated phone number in form:', phoneInput.value);
+            }
+        }
+
+        function showInput(operation) {
+            console.log('Clicked operation:', operation);
+            if (operation === 'fetchGroupTags') {
+                handleFetchGroupTags();
+                return;
+            }
+            const inputContainer = document.getElementById('inputContainer');
+            inputContainer.innerHTML = ''; // Clear previous input forms
+        
+            let deviceName = document.getElementById('deviceNameDisplay')?.textContent || '';
+            let serialNumber = document.getElementById('deviceSerialDisplay')?.textContent || '';
+            let phoneNumber = document.getElementById('devicePhoneDisplay')?.textContent || '';
+        
+            let formHtml = `
+                <form action="/iphoneLost" method="POST" class="input-container">
+                    <h2>iPhone Lost</h2>
+                    <input type="hidden" id="deviceNameHidden" name="deviceName" value="${deviceName}">
+                    <input type="text" id="deviceNameDisplay" name="deviceNameDisplay" class="input-field" value="${deviceName}" readonly>
+                    <input type="text" id="serialNumber" name="serialNumber" class="input-field" value="${serialNumber}" placeholder="Serial Number" required>
+                    <input type="text" id="phoneNumber" name="phoneNumber" class="input-field" value="${phoneNumber}" placeholder="Device Phone Number" required>
+                    <input type="email" id="emailAddress" name="emailAddress" class="input-field" placeholder="Email Address" required>
+                    <button type="submit" class="submit-btn">Submit</button>
+                </form>
+            `;
+        
+            inputContainer.innerHTML = formHtml;
+            highlightActiveMenuItem(operation);
+        }
+
+        function setHiddenValue() {
+            const visibleField = document.getElementById('deviceName');
+            const hiddenField = document.getElementById('deviceNameHidden');
+            hiddenField.value = visibleField.value;
+            return true;  // Allow the form to be submitted
+        }
+        
+        function highlightActiveMenuItem(operation) {
+            const menuItems = document.querySelectorAll('.sidebar-menu a');
+            menuItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('onclick').includes(operation)) {
+                    item.classList.add('active');
+                }
+            });
+        }
+
+        async function fetchGroupTags() {
+            showLoadingDialog();
+            const deviceName = document.querySelector('.input-container input[readonly]').value;
+        
+            try {
+                const response = await fetch('/fetchGroupTags', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ deviceName: deviceName }),
+                });
+        
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+        
+                const data = await response.json();
+                
+                if (data.success && data.groupTags) {
+                    displayGroupTags(data.groupTags);
+                } else {
+                    showDialog(false, data.message || 'Failed to fetch group tags');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showDialog(false, 'An error occurred while fetching group tags.');
+            } finally {
+                hideLoadingDialog();
+            }
+        }
+        
+        function handleFetchGroupTags() {
+            const inputContainer = document.getElementById('inputContainer');
+            const deviceName = document.getElementById('deviceNameDisplay').textContent;
+            const formHtml = `
+                <div class="input-container">
+                    <h2>Assign Group Tag</h2>
+                    <!--input type="text" class="input-field" value="${deviceName}" readonly-->
+                    <button onclick="fetchGroupTags()" class="submit-btn">Fetch Group Tags</button>
+                    <form id="assignGroupTagForm" action="/assignGroupTag" method="POST" style="display: none;">
+                        <input type="hidden" name="deviceName" value="${deviceName}">
+                        <select id="groupTagSelect" name="selectedGroupTag" class="input-field">
+                            <!-- Options will be populated dynamically -->
+                        </select>
+                        <button type="submit" class="submit-btn">Assign Group Tag</button>
+                    </form>
+                </div>
+            `;
+            inputContainer.innerHTML = formHtml;
+            highlightActiveMenuItem('fetchGroupTags');
+        }  
+
+        function resetDeviceName() {
+            document.getElementById('resetDialog').style.display = 'flex';
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to log out?')) {
+                window.location.href = '/logout';
+            }
+        }
+
+       
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM fully loaded and parsed');
+            startObserving();
+            console.log('Initial serial number:', currentSerialNumber);
+            console.log('Initial phone number:', currentPhoneNumber);
+            const defaultOperation = 'iphoneLost';
+            const defaultDeviceName = '<%= deviceName %>'; 
+            showInput(defaultOperation,defaultDeviceName);
+
+            updateSerialNumberInForm();
+            updatePhoneNumberInForm();
+        });
+
+
+        function displayGroupTags(groupTags, deviceName) {
+            const inputContainer = document.getElementById('inputContainer');
+            let formHtml = `
+                <form action="/assignGroupTag" method="POST" class="input-container">
+                    <h2>Assign Group Tag</h2>
+                    <input type="hidden" name="deviceName" value="${deviceName}">
+                    <select id="groupTagSelect" name="selectedGroupTag" class="input-field">
+                        ${groupTags.map(tag => `<option value="${tag}">${tag}</option>`).join('')}
+                    </select>
+                    <button type="submit" class="submit-btn">Assign Group Tag</button>
+                </form>
+            `;
+            inputContainer.innerHTML = formHtml;
+        }
+
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const forms = document.querySelectorAll('form');
+        
+            forms.forEach(form => {
+                form.addEventListener('submit', async (event) => {
+                    event.preventDefault();
+                    showLoadingDialog();
+        
+                    const formData = new FormData(event.target);
+                    const data = Object.fromEntries(formData.entries());
+                    
+                    console.log('Sending data:', data);
+        
+                    try {
+                        const response = await fetch(event.target.action, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(data)
+                        });
+        
+                        const responseData = await response.json();
+        
+                        if (responseData.success) {
+                            showDialog(true, responseData.message);
+                            // Update device info if available
+                            if (responseData.deviceDetails) {
+                                updateDeviceInfo(responseData.deviceDetails);
+                            }
+                        } else {
+                            showDialog(false, responseData.message);
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        showDialog(false, 'An error occurred while processing your request.');
+                    } finally {
+                        hideLoadingDialog();
+                    }
+                });
+            });
+        });
+        
+
+//function updateDeviceInfo(data) {
+//    document.getElementById('deviceNameDisplay').textContent = data.deviceName;
+//    document.getElementById('deviceSerialDisplay').textContent = data.deviceSerial;
+//    document.getElementById('operatingSystemDisplay').textContent = data.operatingSystem;
+//    document.getElementById('complianceDisplay').textContent = data.compliance;
+//    document.getElementById('primaryUserDisplay').textContent = data.primaryUser;
+//    document.getElementById('lastCheckInDisplay').textContent = data.lastCheckIn;
+//}
+
+function updateDeviceInfo(deviceDetails) {
+    if (deviceDetails) {
+        updateElementText('deviceNameDisplay', deviceDetails.deviceName);
+        updateElementText('deviceSerialDisplay', deviceDetails.deviceSerial);
+        updateElementText('operatingSystemDisplay', deviceDetails.operatingSystem);
+        updateElementText('complianceDisplay', deviceDetails.compliance);
+        updateElementText('lastCheckInDisplay', deviceDetails.lastCheckIn);
+        // Remove the update for primaryUserDisplay if it's not in your HTML
+        // updateElementText('primaryUserDisplay', deviceDetails.primaryUser);
+    }
+}
+
+function updateElementText(elementId, value) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        element.textContent = value || 'N/A';
+    } else {
+        console.warn(`Element with id '${elementId}' not found in the DOM`);
+    }
+}
+function showDialog(success, message) {
+    const dialogOverlay = document.getElementById('dialogOverlay');
+    const closeDialogBtn = document.getElementById('closeDialogBtn');
+
+    const dialogBox = dialogOverlay.querySelector('.dialog-box');
+    const dialogTitle = dialogBox.querySelector('h3');
+    const dialogMessage = dialogBox.querySelector('p');
+
+    dialogTitle.textContent = success ? 'Success!' : 'Error';
+    dialogTitle.classList.remove('success', 'error');
+    dialogTitle.classList.add(success ? 'success' : 'error');
+    dialogMessage.textContent = message;
+
+    dialogOverlay.style.display = 'flex';
+
+    closeDialogBtn.addEventListener('click', () => {
+        dialogOverlay.style.display = 'none';
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('Initial serial number:', currentSerialNumber);
+});
+
+
+    
+</script>
+</body>
+</html>
